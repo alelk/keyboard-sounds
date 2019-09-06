@@ -1,4 +1,4 @@
-import java.io.ByteArrayInputStream
+import java.io.{ByteArrayInputStream, IOException}
 import java.nio.file.{Files, Paths}
 import java.util.logging.{Level, Logger}
 
@@ -17,8 +17,13 @@ class SoundsCfg(cfg: Config, baseDirectory: String) {
   private val keySoundFiles = keyNames.toList.map(n => (n.toLowerCase, cfg.getStringList(n).asScala.toList)).toMap
   private val allFileNames = keySoundFiles.values.flatten.toList.distinct
   private val sounds = allFileNames.map { name =>
-    val bytes = Files.readAllBytes(Paths.get(if (baseDirectory.isEmpty) name else s"$baseDirectory/$name"))
-    (name, bytes)
+    val path = Paths.get(baseDirectory, name)
+    try {
+      val bytes = Files.readAllBytes(path)
+      (name, bytes)
+    } catch {
+      case e: IOException => throw new IllegalArgumentException(s"Unable read file: ${path.toAbsolutePath}", e)
+    }
   }.toMap
 
   def soundByKeyText(k: String): Option[Array[Byte]] = for {
