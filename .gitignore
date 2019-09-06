@@ -2,3 +2,4 @@
 .attach_pid*
 /target
 /project/target
+/project/project/target
