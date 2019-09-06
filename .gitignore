@@ -1,0 +1,4 @@
+/.idea
+.attach_pid*
+/target
+/project/target
